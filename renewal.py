@@ -69,7 +69,7 @@ def getRenewal(input_folder="", output_folder="DEFAULT", converted_folder="DEFAU
                                 cell.number_format = '@'
                     workbook.save(output_file)
 
-                    if is_moveConverted:
+                    if not is_moveConverted:
                         # Move the original PDF to the converted folder
                         shutil.move(pdf_file, os.path.join(converted_folder, base_name))
                         print(f"Moved {pdf_file} to {os.path.join(converted_folder, base_name)}")
