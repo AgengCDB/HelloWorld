@@ -1,2 +1,2 @@
-# DummyProject0001
-TKinter project
+# HelloWorld
+TKinter project, GUI
