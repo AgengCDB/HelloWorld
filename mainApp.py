@@ -1,11 +1,12 @@
+import pandas as pd
 import os
 os.system("title Hello")
+import re
 
 import tkinter as tk
 from tkinter import ttk, filedialog
 import tkinter.scrolledtext as tkscrolled
 import base64
-
 
 from tkinterdnd2 import DND_FILES
 
@@ -15,9 +16,12 @@ windll.shcore.SetProcessDpiAwareness(1)
 import random
 from datetime import datetime
 
-# My script
-from renewal import getRenewal
+# My script ##########################################################################################################################
 import excel_to_csv
+from renewal import getRenewal
+import my_function as myf
+import application as app
+import comuncom as cmcm
 
 #############################################################################################################################################
 
@@ -38,8 +42,12 @@ COL_YELLOW = "#EED842"
 COL_DARK_YELLOW = "#B7AD2D"
 
 ## random
-colors = ["#7DC343", "#4C7B24", "#EC722E", "#B34C1C", "#64A2D8", "#3D6DAB", "#EED842", "#B7AD2D"]
-colors_all = ["aliceblue", "antiquewhite", "aqua", "aquamarine", "azure", "beige", "bisque", "black", "blanchedalmond", "blue","blueviolet", "brown", "burlywood", "cadetblue", "chartreuse", "chocolate", "coral", "cornflowerblue", "cornsilk","crimson", "cyan", "darkblue", "darkcyan", "darkgoldenrod", "darkgray", "darkgreen", "darkgrey", "darkkhaki","darkmagenta", "darkolivegreen", "darkorange", "darkorchid", "darkred", "darksalmon", "darkseagreen", "darkslateblue","darkslategray", "darkslategrey", "darkturquoise", "darkviolet", "deeppink", "deepskyblue", "dimgray", "dimgrey","dodgerblue", "firebrick", "floralwhite", "forestgreen", "fuchsia", "gainsboro", "ghostwhite", "gold", "goldenrod","gray", "green", "greenyellow", "grey", "honeydew", "hotpink", "indianred", "indigo", "ivory", "khaki", "lavender","lavenderblush", "lawngreen", "lemonchiffon", "lightblue", "lightcoral", "lightcyan", "lightgoldenrodyellow","lightgray", "lightgreen", "lightgrey", "lightpink", "lightsalmon", "lightseagreen", "lightskyblue", "lightslategray","lightslategrey", "lightsteelblue", "lightyellow", "lime", "limegreen", "linen", "magenta", "maroon", "mediumaquamarine","mediumblue", "mediumorchid", "mediumpurple", "mediumseagreen", "mediumslateblue", "mediumspringgreen", "mediumturquoise","mediumvioletred", "midnightblue", "mintcream", "mistyrose", "moccasin", "navajowhite", "navy", "oldlace", "olive", "olivedrab","orange", "orangered", "orchid", "palegoldenrod", "palegreen", "paleturquoise", "palevioletred", "papayawhip", "peachpuff","peru", "pink", "plum", "powderblue", "purple", "red", "rosybrown", "royalblue", "saddlebrown", "salmon", "sandybrown","seagreen", "seashell", "sienna", "silver", "skyblue", "slateblue", "slategray", "slategrey", "snow", "springgreen","steelblue", "tan", "teal", "thistle", "tomato", "turquoise", "violet", "wheat", "white", "whitesmoke", "yellow", "yellowgreen"]
+colors = [
+    "#7DC343", "#4C7B24", "#EC722E", "#B34C1C", "#64A2D8", "#3D6DAB", "#EED842", "#B7AD2D"
+    ]
+colors_all = [
+    "aliceblue", "antiquewhite", "aqua", "aquamarine", "azure", "beige", "bisque", "black", "blanchedalmond", "blue","blueviolet", "brown", "burlywood", "cadetblue", "chartreuse", "chocolate", "coral", "cornflowerblue", "cornsilk","crimson", "cyan", "darkblue", "darkcyan", "darkgoldenrod", "darkgray", "darkgreen", "darkgrey", "darkkhaki","darkmagenta", "darkolivegreen", "darkorange", "darkorchid", "darkred", "darksalmon", "darkseagreen", "darkslateblue","darkslategray", "darkslategrey", "darkturquoise", "darkviolet", "deeppink", "deepskyblue", "dimgray", "dimgrey","dodgerblue", "firebrick", "floralwhite", "forestgreen", "fuchsia", "gainsboro", "ghostwhite", "gold", "goldenrod","gray", "green", "greenyellow", "grey", "honeydew", "hotpink", "indianred", "indigo", "ivory", "khaki", "lavender","lavenderblush", "lawngreen", "lemonchiffon", "lightblue", "lightcoral", "lightcyan", "lightgoldenrodyellow","lightgray", "lightgreen", "lightgrey", "lightpink", "lightsalmon", "lightseagreen", "lightskyblue", "lightslategray","lightslategrey", "lightsteelblue", "lightyellow", "lime", "limegreen", "linen", "magenta", "maroon", "mediumaquamarine","mediumblue", "mediumorchid", "mediumpurple", "mediumseagreen", "mediumslateblue", "mediumspringgreen", "mediumturquoise","mediumvioletred", "midnightblue", "mintcream", "mistyrose", "moccasin", "navajowhite", "navy", "oldlace", "olive", "olivedrab","orange", "orangered", "orchid", "palegoldenrod", "palegreen", "paleturquoise", "palevioletred", "papayawhip", "peachpuff","peru", "pink", "plum", "powderblue", "purple", "red", "rosybrown", "royalblue", "saddlebrown", "salmon", "sandybrown","seagreen", "seashell", "sienna", "silver", "skyblue", "slateblue", "slategray", "slategrey", "snow", "springgreen","steelblue", "tan", "teal", "thistle", "tomato", "turquoise", "violet", "wheat", "white", "whitesmoke", "yellow", "yellowgreen"
+    ]
 random_color = random.choice(colors)
 
 # TK
@@ -48,20 +56,20 @@ TK_BUTTON_BACKGROUND = COL_GREEN
 TK_BUTTON_ACTIVEBACKGROUND = COL_DARK_GREEN
 
 # Scrolled Text
-SCROLLED_TEXT_WIDTH = 60
+SCROLLED_TEXT_WIDTH = 75
 
 #############################################################################################################################################
 
 # Renewal    
 def select_input_folder():
     input_folder_path = filedialog.askdirectory()
-    input_text.config(state=tk.NORMAL)  # Enable editing
-    input_text.delete(1.0, tk.END)  # Clear previous content
-    input_text.insert(tk.END, input_folder_path)  # Insert new content
-    input_text.config(state=tk.DISABLED)
+    renewal_scrtxt_input_text.config(state=tk.NORMAL)  # Enable editing
+    renewal_scrtxt_input_text.delete(1.0, tk.END)  # Clear previous content
+    renewal_scrtxt_input_text.insert(tk.END, input_folder_path)  # Insert new content
+    renewal_scrtxt_input_text.config(state=tk.DISABLED)
     
 def process_folder():
-    input_folder = input_text.get("1.0", tk.END).strip()
+    input_folder = renewal_scrtxt_input_text.get("1.0", tk.END).strip()
     if input_folder == "":
         result_text.config(state=tk.NORMAL)  # Enable editing
         result_text.delete(1.0, tk.END)  # Clear previous content
@@ -119,7 +127,76 @@ def command_button_open_csv():
         result_text2.delete(1.0, tk.END)  # Clear previous content
         result_text2.insert(tk.END, "File not found or it's just empty")
         result_text2.config(state=tk.DISABLED)
+        
 
+def get_pdf_dir():
+    # pdf_dir = filedialog.askopenfilename(filetypes=[("PDF Files", "*.pdf")])
+    # scrTxt_pdf.config(state=tk.NORMAL)  # Enable editing
+    # scrTxt_pdf.delete(1.0, tk.END)  # Clear previous content
+    # scrTxt_pdf.insert(tk.END, pdf_dir)  # Insert new content
+    # scrTxt_pdf.config(state=tk.DISABLED)
+    
+    pdf_paths = filedialog.askopenfilenames(filetypes=[("PDF Files", "*.pdf")])
+    scrTxt_pdf.config(state=tk.NORMAL)  # Enable editing
+    scrTxt_pdf.delete(1.0, tk.END)  # Clear previous content
+    for pdf_path in pdf_paths:
+        scrTxt_pdf.insert(tk.END, pdf_path + "\n")  # Insert new content
+    scrTxt_pdf.config(state=tk.DISABLED)
+    
+def get_base64():        
+    pdf_paths = scrTxt_pdf.get("1.0", tk.END).strip().split("\n")
+    
+    base64_text.config(state=tk.NORMAL)  # Enable editing
+    base64_text.delete(1.0, tk.END)  # Clear previous content
+    
+    base64_dict = myf.pdfs_to_base64(pdf_paths)
+    for pdf_path, base64_string in base64_dict.items():
+        txt_path = pdf_path + ".txt"
+        with open(txt_path, "w") as txt_file:
+            txt_file.write(base64_string)
+        base64_text.insert(tk.END, txt_path + "\n")  # Insert new content
+    
+    base64_text.config(state=tk.DISABLED)
+    
+
+def open_txt_file():
+    txt_dir = base64_text.get("1.0", tk.END).strip().split("\n")[0]
+    if os.path.exists(txt_dir):
+        os.startfile(os.path.dirname(txt_dir))
+    else:
+        result_text.config(state=tk.NORMAL)  # Enable editing
+        result_text.delete(1.0, tk.END)  # Clear previous content
+        result_text.insert(tk.END, "Sorry, but u have nothing to open")
+        result_text.config(state=tk.DISABLED)
+    
+def save_and_open_text(text, file_path):
+    # Write the text to the specified file path
+    with open(file_path, "w") as file:
+        file.write(text)
+
+    # Open the saved text file automatically
+    os.startfile(file_path)
+    
+# UComply
+ucm_path_input = ""
+
+def ucm_func_select_input():
+    global ucm_path_input 
+    ucm_path_input = list(filedialog.askopenfilenames())
+    ucm_scrtxt_input_text.config(state=tk.NORMAL)  # Enable editing
+    ucm_scrtxt_input_text.delete(1.0, tk.END)  # Clear previous content
+    ucm_scrtxt_input_text.insert(tk.END, ucm_path_input)  # Insert new content
+    ucm_scrtxt_input_text.config(state=tk.DISABLED)
+
+def ucm_func_output():
+    # input_path = list(ucm_scrtxt_input_text.get("1.0", tk.END).split("\n")) 
+    
+    # matches = re.findall(r'\{([^}]*)\}', input_path)
+    # print(ucm_path_input)
+    ucm_scrtxt_result_text.config(state=tk.NORMAL)  # Enable editing
+    ucm_scrtxt_result_text.delete(1.0, tk.END)  # Clear previous content
+    ucm_scrtxt_result_text.insert(tk.END, cmcm.getComplyUncomply(ucm_path_input))  # Insert new content
+    ucm_scrtxt_result_text.config(state=tk.DISABLED)
 #############################################################################################################################################
 
 root = tk.Tk() 
@@ -151,37 +228,133 @@ tabControl.pack(padx=20, pady=20)
 tab1 = ttk.Frame(tabControl)
 tab2 = ttk.Frame(tabControl)
 tab3 = ttk.Frame(tabControl)
+tab4 = ttk.Frame(tabControl)
+tab5 = ttk.Frame(tabControl)
 
+tabControl.add(tab5, text ='UComply') 
+tabControl.add(tab4, text ='PDF to base64') 
 tabControl.add(tab1, text ='Renewal (PDF to Excel)') 
 tabControl.add(tab2, text ='Modify (Excel to CSV)') 
 tabControl.add(tab3, text ='About') 
 
 tabControl.pack(expand = 1, fill ="both")
 
-# Renewal (PDF to Excel) ###################################################################################################################################################################
+# =============================================================================
+# UComply (tab 5) 
+# =============================================================================
 
-## frame Result
-f_result = ttk.Frame(tab1)
-f_result.pack(side=tk.LEFT)
+## frame result
+ucm_f_title = ttk.Frame(tab5)
+ucm_f_title.pack(side=tk.TOP, fill='x')
 
-### Label input dir
-label1 = tk.Label(f_result, text="Input directory :")
-label1.pack(pady=(10, 0))
+ucm_lab_title = tk.Label(ucm_f_title, 
+                        text="Get Comply/Uncomply", 
+                        font=("Roboto", 18, "bold"))
+ucm_lab_title.pack(padx=10, pady=(10, 0))
 
-### Input text
-input_text = tkscrolled.ScrolledText(f_result, 
+ucm_lab_text = tk.Label(ucm_f_title, text="Filename requirement :")
+ucm_lab_text.pack(pady=(10, 0))
+teks = """
+Modif       For modification file.    E.g. ENoB_RAN_CM_SITE_INFO_20240618.csv
+NPE         For NPE file.             E.g. NPE_Update ISR Database_240618.xlsb
+ENoB        For ENoB file.            E.g. ENoB_RAN_CM_SITE_INFO_20240618.csv
+Postel      For Postel file.          E.g. Postel_DATA ISR AKTIF PT SMART TELECOM 667101cc4ad53 (1).xlsx
+"""
+lines = teks.count('\n') + 1
+ucm_text_widget = tk.Text(ucm_f_title, wrap='word', height=lines)
+ucm_text_widget.pack(fill='x', padx=20, pady=(0, 10))
+ucm_text_widget.insert(tk.END, teks)
+ucm_text_widget.configure(state='disabled')
+
+## frame result
+ucm_f_result = ttk.Frame(tab5)
+ucm_f_result.pack(side=tk.LEFT)
+
+ucm_lab_input = tk.Label(ucm_f_result, text="Input directory :")
+ucm_lab_input.pack(pady=(10, 0))
+
+ucm_scrtxt_input_text = tkscrolled.ScrolledText(ucm_f_result, 
                                      bg="lightgray", 
                                      fg="black", 
                                      wrap=tk.WORD, 
                                      height=5,
                                      width=SCROLLED_TEXT_WIDTH)
-input_text.pack(padx=20, pady=(0, 20), fill='both')
-input_text.config(state=tk.DISABLED)
+ucm_scrtxt_input_text.pack(padx=20, pady=(0, 20), fill='both')
+ucm_scrtxt_input_text.config(state=tk.DISABLED)
 
-label2 = tk.Label(f_result, text="Result :")
+ucm_lab_result = tk.Label(ucm_f_result, text="Input directory :")
+ucm_lab_result.pack(pady=(10, 0))
+
+ucm_scrtxt_result_text = tkscrolled.ScrolledText(ucm_f_result, 
+                                     bg="lightgray", 
+                                     fg="black", 
+                                     wrap=tk.WORD, 
+                                     height=5,
+                                     width=SCROLLED_TEXT_WIDTH)
+ucm_scrtxt_result_text.pack(padx=20, pady=(0, 20), fill='both')
+ucm_scrtxt_result_text.config(state=tk.DISABLED)
+
+## frame button
+ucm_f_button = ttk.Frame(tab5)
+ucm_f_button.pack(side=tk.RIGHT, expand=True, fill="x")
+
+ucm_btn_input = tk.Button(ucm_f_button, text="Input Folder", 
+                            command=ucm_func_select_input, 
+                            borderwidth=TK_BUTTON_BORDERWIDTH,
+                            background=COL_BLUE,
+                            activebackground=COL_DARK_BLUE)
+ucm_btn_input.pack(padx=(0, 20), pady=5, fill=tk.BOTH)
+
+ucm_btn_output = tk.Button(ucm_f_button, text="Process File", 
+                            command=ucm_func_output, 
+                            borderwidth=TK_BUTTON_BORDERWIDTH,
+                            background=COL_BLUE,
+                            activebackground=COL_DARK_BLUE)
+ucm_btn_output.pack(padx=(0, 20), pady=5, fill=tk.BOTH)
+
+def ucm_func_open_folder():
+    file_dir = ucm_scrtxt_result_text.get("1.0", tk.END).strip()
+    if os.path.exists(file_dir):
+        os.startfile(os.path.dirname(file_dir))
+    else:
+        ucm_scrtxt_result_text.config(state=tk.NORMAL)  # Enable editing
+        ucm_scrtxt_result_text.delete(1.0, tk.END)  # Clear previous content
+        ucm_scrtxt_result_text.insert(tk.END, "Sorry, but u have nothing to open")
+        ucm_scrtxt_result_text.config(state=tk.DISABLED)
+
+ucm_btn_open = tk.Button(ucm_f_button, text="Open File", 
+                            command=ucm_func_open_folder, 
+                            borderwidth=TK_BUTTON_BORDERWIDTH,
+                            background=COL_GREEN,
+                            activebackground=COL_DARK_GREEN)
+ucm_btn_open.pack(padx=(0, 20), pady=5, fill=tk.BOTH)
+
+# =============================================================================
+# Renewal (PDF to Excel) 
+# =============================================================================
+
+## frame Result
+renewal_f_result = ttk.Frame(tab1)
+renewal_f_result.pack(side=tk.LEFT)
+
+### Label input dir
+renewal_label_1 = tk.Label(renewal_f_result, text="Input directory :")
+renewal_label_1.pack(pady=(10, 0))
+
+### Input text
+renewal_scrtxt_input_text = tkscrolled.ScrolledText(renewal_f_result, 
+                                     bg="lightgray", 
+                                     fg="black", 
+                                     wrap=tk.WORD, 
+                                     height=5,
+                                     width=SCROLLED_TEXT_WIDTH)
+renewal_scrtxt_input_text.pack(padx=20, pady=(0, 20), fill='both')
+renewal_scrtxt_input_text.config(state=tk.DISABLED)
+
+label2 = tk.Label(renewal_f_result, text="Result :")
 label2.pack()
 
-result_text = tkscrolled.ScrolledText(f_result, bg="lightgray", fg="black", wrap=tk.WORD, height=5,
+result_text = tkscrolled.ScrolledText(renewal_f_result, bg="lightgray", fg="black", wrap=tk.WORD, height=5,
                                       width=SCROLLED_TEXT_WIDTH)
 result_text.pack(padx=20, pady=(0, 20), fill='both')
 result_text.config(state=tk.DISABLED) 
@@ -215,14 +388,16 @@ process_button = tk.Button(f_checkBox, text="Process Folder",
 process_button.pack(padx=(0, 20), pady=(0, 10), fill=tk.BOTH)
 
 ### Open Folder
-button_open_folder = tk.Button(f_checkBox, text="Open excel location", 
+button_open_folder = tk.Button(f_checkBox, text="Open Excel Location", 
                            command=open_folder,
                            borderwidth=TK_BUTTON_BORDERWIDTH,
                            background=TK_BUTTON_BACKGROUND,
                            activebackground=TK_BUTTON_ACTIVEBACKGROUND)
 button_open_folder.pack(padx=(0, 20), pady=(0, 0), fill=tk.BOTH)
 
-# Modify (text to csv) ###############################################################################################################################################################################################################################################################################################################################################################
+# =============================================================================
+# Modify (text to csv) 
+# =============================================================================
 
 ## Results
 f_result2 = ttk.Frame(tab2)
@@ -272,7 +447,105 @@ button_open_csv = tk.Button(f_button, text="Open csv",
                         activebackground=COL_DARK_YELLOW)
 button_open_csv.pack(pady=(0, 10), padx=(0, 20), fill=tk.BOTH)
 
+# ================================================================================================
+# PDF to base64
+# ================================================================================================
+
+def cmd_get_excel2():
+    pdf_paths = scrTxt_pdf.get("1.0", tk.END).strip()
+    if pdf_paths == "":
+        base64_text.config(state=tk.NORMAL)  # Enable editing
+        base64_text.delete(1.0, tk.END)  # Clear previous content
+        base64_text.insert(tk.END, E_NO_DIR)
+        base64_text.config(state=tk.DISABLED)
+    else:
+        pdf_paths = scrTxt_pdf.get("1.0", tk.END).strip().split("\n")
+
+        base64_text.config(state=tk.NORMAL)  # Enable editing
+        base64_text.delete(1.0, tk.END)
+        
+        base64_dict = myf.pdfs_to_base64_to_excel(pdf_paths)
+        df = pd.DataFrame.from_dict(base64_dict, orient='index', columns=['actionType',
+                                                                          'plusCode', 
+                                                                          'FILE_NAME', 
+                                                                          'DESCRIPTION', 
+                                                                          'FILE_BLOB'])
+        
+        for pdf_path, base64_string in base64_dict.items():
+            print("=============== "+pdf_path)
+            now = str(datetime.now().strftime('%Y-%m-%d_%H%M%S'))
+            excel_path = "ISR_UPLOAD_FILE_" + now + ".csv" 
+            df.to_csv(excel_path, index=False)
+            base64_text.insert(tk.END, excel_path + "\n")  # Insert new content
+            break
+        
+        base64_text.config(state=tk.DISABLED)
+    
+################
+
+ftitlePDFtoBase64 = ttk.Frame(tab4)
+ftitlePDFtoBase64.pack(side=tk.TOP)
+
+# Create the title label
+titlePDFtoBase64 = tk.Label(ftitlePDFtoBase64, 
+                            text="PDF to Base64 Text", 
+                            font=("Roboto", 18, "bold"))
+titlePDFtoBase64.pack(padx=10, pady=(10, 0))
+
+f_result3 = ttk.Frame(tab4)
+f_result3.pack(side=tk.LEFT, expand=True)
+
+label5 = tk.Label(f_result3, text="PDF directory :")
+label5.pack(pady=(10,0))
+
+scrTxt_pdf = tkscrolled.ScrolledText(f_result3, height=5)
+scrTxt_pdf.pack(padx=10, pady=(0, 10), fill=tk.BOTH, expand=True)
+scrTxt_pdf.config(state=tk.DISABLED)
+
+label6 = tk.Label(f_result3, text="Base64 Text :")
+label6.pack()
+
+base64_text = tkscrolled.ScrolledText(f_result3, height=5)
+base64_text.pack(padx=10, pady=(0, 10), fill=tk.BOTH, expand=True)
+base64_text.config(state=tk.DISABLED)
+
+####
+
+f_base_button = ttk.Frame(tab4)
+f_base_button.pack(side=tk.RIGHT, padx=(0, 20), expand=True, fill="x")
+
+btn_input_pdf = tk.Button(f_base_button, text="Open pdf", 
+                        command=get_pdf_dir,
+                        borderwidth=TK_BUTTON_BORDERWIDTH,
+                        background=COL_YELLOW,
+                        activebackground=COL_DARK_YELLOW)
+btn_input_pdf.pack(padx=10, pady=10, side=tk.TOP, fill=tk.BOTH)
+
+btn_get_base64 = tk.Button(f_base_button, text="Get base64", 
+                        command=get_base64,
+                        borderwidth=TK_BUTTON_BORDERWIDTH,
+                        background=COL_GREEN,
+                        activebackground=COL_DARK_GREEN)
+btn_get_base64.pack(padx=10, pady=10, side=tk.TOP, fill=tk.BOTH)
+
+button_get_excel2 = tk.Button(f_base_button, text="Get Excel", 
+                        command=cmd_get_excel2,
+                        borderwidth=TK_BUTTON_BORDERWIDTH,
+                        background=COL_ORANGE,
+                        activebackground=COL_DARK_ORANGE)
+button_get_excel2.pack(padx=10, pady=10, side=tk.TOP, fill=tk.BOTH)
+# button_get_excel2.config(state=tk.DISABLED)
+
+btn_open_text = tk.Button(f_base_button, text="Open txt folder", 
+                        command=open_txt_file,
+                        borderwidth=TK_BUTTON_BORDERWIDTH,
+                        background=COL_BLUE,
+                        activebackground=COL_DARK_BLUE)
+btn_open_text.pack(padx=10, pady=10, side=tk.TOP, fill=tk.BOTH)
+
+
 # About ###############################################################################################################################################################################################################################################################################################################################################################
+
 def cmd_button_check():
     button_check.config(bg=random.choice(colors))
     button_scroll_to_bottom.config(bg=random.choice(colors_all),
@@ -314,8 +587,10 @@ button_scroll_to_bottom.pack(padx=10, pady=20, side=tk.RIGHT)
 DEFAULT_BG_COLOR = "#F0F0F0"
 style = ttk.Style()
 style.theme_create('yummy', settings={"TNotebook.Tab": {"configure": {"padding": [5, 1], 
-                                                                      "background": "grey"},
+                                                                      "background": "grey",
+                                                                      "foreground": "white"},
                                                         "map": {"background": [("selected", DEFAULT_BG_COLOR)],
+                                                                "foreground": [("selected", "black")],
                                                                 "expand": [("selected", [1, 1, 1, 0])]} },
                                       "TFrame": {"configure": {"background": DEFAULT_BG_COLOR} },
                                       "TButton": {"configure": {"foreground": "white",

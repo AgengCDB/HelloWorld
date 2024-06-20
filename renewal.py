@@ -118,7 +118,13 @@ def process_nilai_bhp(value):
     return number
 
 def extract_data_from_excel(file_path, sheet_name='Sheet2'):
-    df = pd.read_excel(file_path, sheet_name)
+    
+    try:
+        df = pd.read_excel(file_path, sheet_name)
+    except ValueError as e:
+        print(f"Error: {e}")
+        print(f"Sheet '{sheet_name}' not found in the file. Please check the sheet name and try again.")
+        return pd.DataFrame()  # Return an empty DataFrame if sheet not found
 
     temp_column = ['fileName', 'Nomor Aplikasi', 'SITE ID', 'NILAI BHP']
     dfHasil = pd.DataFrame(columns=temp_column)
